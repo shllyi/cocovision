@@ -1,0 +1,11 @@
+.env
+**/.env
+backend/serviceAccountKey.json
+node_modules/
+**/node_modules/
+__pycache__/
+*.pyc
+backend/venv/
+backend/uploads/
+.expo/
+.agents/

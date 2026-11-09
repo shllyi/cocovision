@@ -1,0 +1,54 @@
+UNMATCHED ROUTES REPORT
+=======================
+
+Scan scope: frontend Expo Router routes.
+
+1. /
+   Referenced by frontend/app/(auth)/login.tsx:169
+   Missing file: frontend/app/index.tsx
+
+2. /public/acoustic
+   Referenced by frontend/app/(tabs)/index.tsx:490
+   Missing file: frontend/app/(tabs)/public/acoustic.tsx
+
+3. /public/prediction
+   Referenced by frontend/app/(tabs)/index.tsx:522
+   Missing file: frontend/app/(tabs)/public/prediction.tsx
+
+4. /public/post
+   Referenced by frontend/app/(tabs)/index.tsx:506
+   Missing file: frontend/app/(tabs)/public/post.tsx
+
+5. /public/about-us
+   Referenced by frontend/app/(tabs)/index.tsx:951
+   Missing file: frontend/app/(tabs)/public/about-us.tsx
+
+6. /public/waste-solutions
+   Referenced by frontend/app/(tabs)/_layout.tsx:147
+   Missing file: frontend/app/(tabs)/public/waste-solutions.tsx
+
+7. /public/[postId]
+   Referenced by frontend/app/(tabs)/index.tsx:54
+   Missing file: frontend/app/(tabs)/public/[postId].tsx
+
+8. /user/profile
+   Referenced by frontend/app/(tabs)/_layout.tsx:169
+   Missing file: frontend/app/(tabs)/user/profile.tsx
+
+9. /admin/admin
+   Referenced by frontend/app/(tabs)/_layout.tsx:186
+   Missing file: frontend/app/(tabs)/admin/admin.tsx
+
+10. Dynamic notification route
+    Referenced by frontend/components/FloatingNotifications.tsx:200
+    Current route:
+    /(tabs)/public/${item.data.post_id}
+    Expected route:
+    /(tabs)/public/[postId]
+    Target file is also missing:
+    frontend/app/(tabs)/public/[postId].tsx
+
+Existing route:
+/(tabs)/public/classify
+Implemented by:
+frontend/app/(tabs)/public/classify.tsx

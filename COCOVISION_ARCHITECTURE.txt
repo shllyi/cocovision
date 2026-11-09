@@ -1,0 +1,1189 @@
+COCOVISION SYSTEM ARCHITECTURE
+==============================
+
+1. SYSTEM OVERVIEW
+------------------
+
+CocoVision is a coconut-assistance platform composed of:
+
+1. Frontend client
+   - Expo and React Native application
+   - TypeScript
+   - Expo Router navigation
+   - Supports Android, iOS, and web
+   - Provides authentication, coconut image classification, acoustic analysis,
+     community posts, market-price information, waste-product discovery,
+     notifications, news, analytics, and AI chat
+
+2. Backend API
+   - Python FastAPI application
+   - Asynchronous REST API
+   - MongoDB database accessed through Motor
+   - Machine-learning inference services
+   - Authentication and user-management services
+   - Cloudinary image storage
+   - Google Gemini AI integration
+   - News and market-data integrations
+
+3. Machine-learning subsystem
+   - YOLO object-detection model for coconut detection and counting
+   - TensorFlow/Keras classifiers for coconut maturity classification
+   - Acoustic analysis model for coconut evaluation
+   - Separate training and dataset-preparation scripts
+
+4. External services
+   - MongoDB
+   - Cloudinary
+   - Firebase Authentication
+   - Google Gemini
+   - External news and market-data APIs
+   - ngrok tunnel for development access
+   - Expo/EAS for application execution and builds
+
+
+2. HIGH-LEVEL ARCHITECTURE
+--------------------------
+
+User / Farmer / Admin
+        |
+        v
+Expo React Native / Web Frontend
+        |
+        | HTTPS REST requests
+        | JSON / multipart form data
+        v
+FastAPI Backend
+        |
+        +-- Authentication API
+        +-- Classification API
+        +-- Acoustic-analysis API
+        +-- Posts/community API
+        +-- AI-chat API
+        +-- Analytics API
+        +-- Notifications API
+        +-- News API
+        +-- Waste-product API
+        +-- Price prediction API
+        |
+        +-- Backend services
+        |   +-- Auth service
+        |   +-- Posts service
+        |   +-- Scan service
+        |   +-- Notification service
+        |   +-- Waste-product service
+        |   +-- Market analysis service
+        |
+        +-- Machine-learning services
+            +-- YOLO coconut detector
+            +-- TensorFlow classifiers
+            +-- Acoustic classifier
+            +-- Audio preprocessing
+            +-- Market forecasting
+
+Backend integrations:
+   FastAPI <--> MongoDB
+   FastAPI <--> Cloudinary
+   FastAPI <--> Firebase services
+   FastAPI <--> Google Gemini
+   FastAPI <--> News API
+   FastAPI <--> Market-data sources
+
+Local model artifacts:
+   - YOLO .pt models
+   - TensorFlow .h5 models
+   - Acoustic .pkl models
+
+
+3. REPOSITORY STRUCTURE
+-----------------------
+
+cocovision/
+|
++-- backend/
+|   |
+|   +-- main.py
+|   +-- config.py
+|   +-- database.py
+|   +-- requirements.txt
+|   +-- .env
+|   +-- serviceAccountKey.json
+|   |
+|   +-- routers/
+|   |   +-- auth.py
+|   |   +-- posts.py
+|   |   +-- classify.py
+|   |   +-- acoustic.py
+|   |   +-- ai_chat.py
+|   |   +-- analytics.py
+|   |   +-- notifications.py
+|   |   +-- news.py
+|   |   +-- prediction.py
+|   |   +-- wasteproduct.py
+|   |
+|   +-- services/
+|   |   +-- auth.py
+|   |   +-- posts.py
+|   |   +-- classifier.py
+|   |   +-- acoustic.py
+|   |   +-- scans.py
+|   |   +-- notifications.py
+|   |   +-- market_analysis.py
+|   |   +-- wasteproduct.py
+|   |
+|   +-- schemas/
+|   |   +-- auth.py
+|   |   +-- posts.py
+|   |   +-- scans.py
+|   |   +-- notifications.py
+|   |   +-- prices.py
+|   |
+|   +-- utils/
+|   |   +-- content_filter.py
+|   |
+|   +-- models/
+|   |   +-- coconut_counting.pt
+|   |   +-- coconut_counting2.pt
+|   |   +-- coconut_model.h5
+|   |   +-- coconut_model_3class.h5
+|   |   +-- coconut_model_4class3.h5
+|   |   +-- coconut_acoustic_model.pkl
+|   |   +-- other acoustic model files
+|   |
+|   +-- ml_training/
+|       +-- train_model.py
+|       +-- train_model2.py
+|       +-- train_acoustic_model.py
+|       +-- dataset preparation scripts
+|
++-- frontend/
+    |
+    +-- app/
+    |   +-- _layout.tsx
+    |   +-- modal.tsx
+    |   +-- (auth)/
+    |   |   +-- _layout.tsx
+    |   |   +-- login.tsx
+    |   |   +-- register.tsx
+    |   |
+    |   +-- (tabs)/
+    |       +-- _layout.tsx
+    |       +-- index.tsx
+    |
+    +-- components/
+    |   +-- FloatingChatbot.tsx
+    |   +-- FloatingNotifications.tsx
+    |   +-- themed-text.tsx
+    |   +-- themed-view.tsx
+    |   +-- ui/
+    |
+    +-- constants/
+    |   +-- config.ts
+    |   +-- firebase.ts
+    |   +-- theme.ts
+    |
+    +-- hooks/
+    +-- utils/
+    +-- package.json
+    +-- app.json
+    +-- eas.json
+
+The backend/venv and frontend/node_modules directories are installed
+dependency environments rather than authored application components.
+
+
+4. FRONTEND ARCHITECTURE
+------------------------
+
+4.1 Frontend technology stack
+
+The frontend is built using:
+
+- React Native
+- Expo SDK 54
+- TypeScript
+- Expo Router
+- React Navigation
+- NativeWind/Tailwind styling
+- Firebase Authentication
+- Axios and native fetch
+- Expo SecureStore
+- AsyncStorage
+- Expo Camera and Image Picker
+- Expo AV/audio functionality
+- React Native Chart Kit
+- Expo EAS build configuration
+
+Main configuration files:
+
+- frontend/package.json
+- frontend/app.json
+- frontend/eas.json
+
+4.2 Routing architecture
+
+The root router exposes two main route groups:
+
+Root Stack
+|
++-- (auth)
+|   +-- login
+|   +-- register
+|
++-- (tabs)
+    +-- Home
+    +-- Public features
+    +-- User features
+    +-- Admin features
+
+The tab layout references these functional areas:
+
+- Home
+- Classify
+- Create post
+- Price prediction
+- Waste solutions
+- Profile
+- Admin
+- About Us
+- Acoustic analysis
+- Post details
+- User update
+- Notifications
+- News
+
+The current checked-in frontend tree visibly contains the main home and
+authentication screens. The tab layout also references additional feature
+routes such as classification, prediction, profile, acoustic analysis,
+waste solutions, and admin pages; these should be treated as intended
+navigation surfaces.
+
+4.3 Frontend authentication
+
+Standard authentication:
+
+   Frontend
+       |
+       +-- POST /auth/register
+       +-- POST /auth/login
+       |
+       v
+   Backend authentication service
+       |
+       v
+   MongoDB user records
+
+Google authentication:
+
+   Frontend
+       |
+       +-- Firebase Auth
+       +-- Expo Auth Session
+       +-- Google OAuth
+       |
+       v
+   POST /auth/google-login
+       |
+       v
+   Backend user record and login handling
+
+Authentication configuration is located in:
+
+- frontend/constants/firebase.ts
+- frontend/constants/config.ts
+
+The frontend stores user and session-related data using Expo SecureStore
+and AsyncStorage through Firebase persistence.
+
+4.4 Frontend API communication
+
+The API base URL is centralized in frontend/constants/config.ts.
+The current development configuration points to an ngrok HTTPS endpoint.
+
+Frontend API communication uses:
+
+- fetch()
+- axios
+
+Main API areas used by the frontend include:
+
+- /auth/login
+- /auth/register
+- /auth/google-login
+- /news/coconut
+- /posts/all
+- /ai/chat
+- /notifications
+- /notifications/unread-count
+- /notifications/{notification_id}/read
+- /notifications/read-all
+
+4.5 Frontend UI responsibilities
+
+Home/feed screen:
+
+- Displays coconut-related news
+- Displays community posts
+- Provides feature navigation
+- Supports refresh behavior
+- Supports responsive web/mobile layout
+- Navigates to classification and acoustic analysis
+
+Floating chatbot:
+
+- Accepts user questions
+- Sends requests to POST /ai/chat
+- Displays Gemini-backed responses
+
+Notifications:
+
+- Retrieves notifications
+- Retrieves unread notification count
+- Marks one notification as read
+- Marks all notifications as read
+
+
+5. BACKEND ARCHITECTURE
+-----------------------
+
+5.1 Backend bootstrap
+
+The backend entry point is backend/main.py.
+
+Responsibilities:
+
+1. Creates the FastAPI application.
+2. Enables logging.
+3. Configures CORS.
+4. Registers all API routers.
+5. Configures Cloudinary.
+6. Provides the root health endpoint.
+7. Provides direct post retrieval.
+
+Application title:
+
+   Cocotry Backend
+
+Health endpoint:
+
+   GET /
+
+Response:
+
+   {"message": "Cocotry API is running"}
+
+5.2 Backend configuration
+
+Configuration is defined in backend/config.py.
+
+Expected environment variables:
+
+- MongoDB connection URL
+- Database name
+- Cloudinary cloud name
+- Cloudinary API key
+- Cloudinary API secret
+- Gemini API key
+- News API key
+
+Actual secret values in backend/.env are intentionally not included in this
+architecture document.
+
+The backend also contains a Firebase service-account file. Its contents
+must remain private and should not be committed to source control.
+
+5.3 Database layer
+
+The database layer is implemented in backend/database.py.
+
+Settings
+   |
+   v
+MongoDB connection URL
+   |
+   v
+AsyncIOMotorClient
+   |
+   v
+Configured MongoDB database
+   |
+   v
+FastAPI dependency: get_db()
+
+The backend uses:
+
+- Motor for asynchronous MongoDB access
+- PyMongo as the underlying MongoDB driver
+- FastAPI dependency injection through Depends(get_db)
+
+Logical MongoDB data areas include:
+
+- Users
+- Posts
+- Comments
+- Scans
+- Notifications
+- Waste products
+- Price history
+- Market forecasts
+
+
+6. BACKEND API MODULES
+----------------------
+
+6.1 Authentication API
+
+Router: backend/routers/auth.py
+Service: backend/services/auth.py
+Schema: backend/schemas/auth.py
+Prefix: /auth
+
+Endpoints:
+
+- POST /auth/register
+- POST /auth/login
+- POST /auth/google-login
+- PUT /auth/update
+- GET /auth/users
+- PUT /auth/users/{user_id}/role
+- PUT /auth/users/{user_id}/status
+
+Responsibilities:
+
+- Register users
+- Authenticate users
+- Support Google-based login
+- Update user profiles
+- Retrieve users for administration
+- Change roles
+- Change account status
+
+6.2 Image classification API
+
+Router: backend/routers/classify.py
+Service: backend/services/classifier.py
+Scan service: backend/services/scans.py
+Prefixes: /classify and /user
+
+Endpoints:
+
+- POST /classify/image
+- POST /classify/save-scan
+- POST /classify/upload-image
+- GET /classify/scans
+- DELETE /classify/scans/{scan_id}
+- POST /user/save-scan
+
+The same classification router is mounted under /user to support the
+frontend user scan workflow.
+
+6.3 Image ML pipeline
+
+Uploaded image
+    |
+    v
+Read image with Pillow
+    |
+    v
+YOLO coconut detector
+    |
+    v
+Bounding boxes for detected coconuts
+    |
+    v
+Crop each coconut
+    |
+    v
+Resize crop to 224 x 224
+    |
+    v
+Normalize pixel values
+    |
+    v
+Four-class filtering model
+    |
+    +-- random class -> discard detection
+    |
+    v
+Maturity classification models
+    |
+    +-- Original classifier
+    +-- Custom three-class classifier
+    |
+    v
+Return labels, confidence scores, bounding boxes, descriptions,
+and image size
+
+Detection model:
+
+   backend/models/coconut_counting.pt
+
+Responsibilities:
+
+- Detect coconuts
+- Produce bounding boxes
+- Count detected objects
+
+Filtering model:
+
+   backend/models/coconut_model_4class3.h5
+
+Classes:
+
+- malakanin
+- malauhog
+- niyog
+- random
+
+The random class rejects detections that are not valid coconuts.
+
+Maturity classifiers:
+
+- backend/models/coconut_model.h5
+- backend/models/coconut_model_3class.h5
+
+Maturity classes:
+
+- malakanin
+- malauhog
+- niyog
+
+Classification results include:
+
+- Primary label
+- Primary confidence
+- Secondary label
+- Secondary confidence
+- Stage description
+- Bounding box
+- Total coconut count
+- Original image dimensions
+
+Maturity interpretation:
+
+- malauhog: Buko juice stage
+- malakanin: Soft meat stage
+- niyog: Mature coconut stage
+
+6.4 Acoustic analysis API
+
+Router: backend/routers/acoustic.py
+Service: backend/services/acoustic.py
+Prefix: /acoustic
+
+Endpoints:
+
+- GET /acoustic/test
+- POST /acoustic/audio
+
+Typical flow:
+
+Recorded or uploaded audio
+    |
+    v
+Multipart upload to FastAPI
+    |
+    v
+Temporary audio processing
+    |
+    v
+Audio decoding and feature extraction
+    |
+    v
+Acoustic classification model
+    |
+    v
+Coconut acoustic quality prediction
+    |
+    v
+JSON result returned to frontend
+
+Audio-related dependencies include:
+
+- Librosa
+- SoundFile
+- SciPy
+- Pydub
+- NumPy
+- Scikit-learn
+
+Acoustic model artifacts are stored under backend/models/.
+
+6.5 AI chatbot API
+
+Router: backend/routers/ai_chat.py
+Prefix: /ai
+
+Endpoints:
+
+- GET /ai/models
+- POST /ai/chat
+
+Flow:
+
+Frontend chatbot
+    |
+    v
+POST /ai/chat
+    |
+    v
+Backend prompt and conversation handling
+    |
+    v
+Google Gemini API
+    |
+    v
+Generated response
+    |
+    v
+Frontend chatbot display
+
+The backend supports Google Gemini client libraries through:
+
+- google-genai
+- google-generativeai
+
+6.6 Community posts API
+
+Router: backend/routers/posts.py
+Service: backend/services/posts.py
+Schema: backend/schemas/posts.py
+Prefix: /posts
+
+Endpoints:
+
+- POST /posts/create
+- GET /posts/all
+- GET /posts/user
+- PUT /posts/{post_id}
+- DELETE /posts/{post_id}
+- POST /posts/{post_id}/like
+- POST /posts/{post_id}/comment
+- DELETE /posts/{post_id}/comment/{comment_id}
+
+Responsibilities:
+
+- Create community posts
+- Retrieve all posts
+- Retrieve posts for the current user
+- Edit posts
+- Delete posts
+- Like posts
+- Add comments
+- Delete comments
+
+Post images are uploaded through Cloudinary while post metadata is stored
+in MongoDB.
+
+6.7 Notifications API
+
+Router: backend/routers/notifications.py
+Service: backend/services/notifications.py
+Prefix: /notifications
+
+Endpoints:
+
+- GET /notifications
+- GET /notifications/unread-count
+- PUT /notifications/read-all
+- PUT /notifications/{notification_id}/read
+
+Notifications may be generated by:
+
+- Community activity
+- Product activity
+- Administrative events
+- Other user-related system actions
+
+6.8 News API
+
+Router: backend/routers/news.py
+Prefix: /news
+
+Endpoint:
+
+- GET /news/coconut
+
+The backend acts as a proxy and formatter for coconut-related news, allowing
+the frontend to consume a consistent response format without directly
+exposing the news API credentials.
+
+6.9 Market and price prediction API
+
+Router: backend/routers/prediction.py
+Service: backend/services/market_analysis.py
+Schema: backend/schemas/prices.py
+
+Endpoints:
+
+- GET /prices
+- GET /insights
+- GET /history/{product_id}
+- GET /chart/{product_id}
+- POST /forecast/{product_id}
+- POST /sync
+- GET /explanation
+- POST /upload-copra-image
+- GET /copra-prices
+- GET /copra-history
+- GET /copra-history/{region}
+- GET /copra-predictions
+
+Capabilities:
+
+- Current prices
+- Historical price data
+- Chart data
+- Price forecasts
+- Market insights
+- Copra-specific pricing and history
+- Forecast explanations
+- Market-data synchronization
+- Copra image upload
+
+Data-processing and machine-learning dependencies include:
+
+- Pandas
+- NumPy
+- Scikit-learn
+
+6.10 Waste-product API
+
+Router: backend/routers/wasteproduct.py
+Service: backend/services/wasteproduct.py
+Prefix: /wasteproduct
+
+Endpoints:
+
+- POST /wasteproduct/discover
+- POST /wasteproduct/create
+- GET /wasteproduct/all
+- GET /wasteproduct/{product_id}
+- PUT /wasteproduct/{product_id}
+- DELETE /wasteproduct/{product_id}
+- POST /wasteproduct/seed
+
+Responsibilities:
+
+- Discover coconut waste-product ideas
+- Create waste-product records
+- List products
+- Retrieve one product
+- Update products
+- Delete products
+- Seed initial product data
+- Upload product images to Cloudinary
+
+6.11 Analytics API
+
+Router: backend/routers/analytics.py
+Prefix: /analytics
+
+Endpoints:
+
+- GET /analytics/admin/stats
+- GET /analytics/user/stats
+
+The analytics layer produces aggregate information for administrators and
+individual users, including usage, scan history, community activity, and
+other stored system metrics.
+
+
+7. IMAGE STORAGE ARCHITECTURE
+-----------------------------
+
+Cloudinary is initialized in backend/main.py.
+
+Image-storage flow:
+
+Frontend image
+    |
+    v
+FastAPI multipart endpoint
+    |
+    v
+Cloudinary upload
+    |
+    v
+Cloudinary URL and public ID
+    |
+    +----------------------+
+    |                      |
+    v                      v
+MongoDB metadata      Frontend image rendering
+
+Cloudinary is used for:
+
+- Community post images
+- Waste-product images
+- Uploaded scan images
+- Copra-related image uploads
+
+MongoDB stores application metadata and references, while Cloudinary stores
+the actual image assets.
+
+
+8. DATA FLOW EXAMPLES
+---------------------
+
+8.1 User login
+
+1. User enters email and password.
+2. Frontend sends POST /auth/login.
+3. FastAPI validates the request using the auth schema.
+4. Auth service looks up the user in MongoDB.
+5. Backend returns authentication/user information.
+6. Frontend stores relevant session information using SecureStore.
+7. Frontend redirects the user to the profile or main application area.
+
+8.2 Coconut image classification
+
+1. User selects or captures an image.
+2. Frontend sends multipart image data to /classify/image.
+3. FastAPI receives the UploadFile.
+4. Classifier reads the image with Pillow.
+5. YOLO detects coconut objects.
+6. Each detected object is cropped.
+7. The crop is normalized and resized.
+8. The four-class model removes random/non-coconut detections.
+9. Two maturity models classify the remaining coconut.
+10. Backend returns count, detections, bounding boxes, labels,
+    confidence values, descriptions, and image dimensions.
+11. Frontend renders the result.
+12. User may save the result through /user/save-scan.
+
+8.3 Acoustic analysis
+
+1. User records or selects audio.
+2. Frontend uploads audio to /acoustic/audio.
+3. Backend converts or decodes the audio if necessary.
+4. Acoustic features are extracted.
+5. The acoustic model produces a prediction.
+6. Backend returns the acoustic result.
+7. Frontend displays the analysis.
+
+8.4 Community post creation
+
+1. User enters post text and optionally selects images.
+2. Frontend sends multipart data to /posts/create.
+3. Backend validates the post request.
+4. Images are uploaded to Cloudinary.
+5. Cloudinary URLs are attached to the post.
+6. Post metadata is saved to MongoDB.
+7. Notifications may be generated for relevant users.
+8. The new post is returned to the frontend.
+
+8.5 AI chatbot interaction
+
+1. User types a question.
+2. FloatingChatbot sends POST /ai/chat.
+3. Backend prepares the prompt.
+4. Google Gemini processes the request.
+5. Backend returns the generated answer.
+6. The chatbot displays the answer.
+
+8.6 Price prediction
+
+1. User opens the price or prediction screen.
+2. Frontend requests current prices, histories, or insights.
+3. Backend loads stored or synchronized market data.
+4. Market-analysis service processes the data.
+5. Forecasting logic produces future estimates.
+6. Backend returns chart-ready data and explanations.
+7. Frontend renders price charts and insights.
+
+
+9. MACHINE-LEARNING ARCHITECTURE
+--------------------------------
+
+9.1 Training subsystem
+
+Training scripts are separated under backend/ml_training/.
+
+Training functions include:
+
+- Dataset augmentation
+- Dataset balancing
+- Dataset redistribution
+- Dataset splitting
+- Image-model training
+- Acoustic-model training
+- Model validation and inspection
+
+Training flow:
+
+Training datasets
+    |
+    v
+Augmentation and balancing scripts
+    |
+    v
+Training scripts
+    |
+    v
+Saved model artifacts
+    |
+    v
+Runtime backend inference services
+
+9.2 Runtime inference models
+
+Runtime models are stored under backend/models/.
+
+Model categories:
+
+YOLO .pt files:
+   Coconut object detection and counting
+
+TensorFlow/Keras .h5 files:
+   Coconut maturity classification
+
+Pickle .pkl files:
+   Acoustic analysis models and supporting artifacts
+
+Model loading occurs when the classifier or acoustic service is imported.
+Model availability is therefore required for backend startup or for loading
+the corresponding service.
+
+
+10. SECURITY AND CONFIGURATION BOUNDARIES
+-----------------------------------------
+
+10.1 Credential locations
+
+Sensitive credentials are intended to be kept outside source code through:
+
+- backend/.env
+- backend/serviceAccountKey.json
+
+These may contain:
+
+- Database credentials
+- Cloudinary credentials
+- Gemini API keys
+- News API keys
+- Firebase service-account credentials
+
+They must not be exposed in documentation, commits, screenshots, or chat
+messages.
+
+10.2 Authentication boundary
+
+The frontend performs the user-facing authentication flow, while the
+backend maintains application-level user records and roles.
+
+Frontend identity/authentication
+             |
+             v
+Backend user record and role management
+             |
+             v
+MongoDB
+
+The application supports:
+
+- Updating user roles
+- Activating or deactivating user accounts
+- Listing users
+
+10.3 Current CORS behavior
+
+The FastAPI application currently allows all origins, methods, headers, and
+credentials. This is convenient for local development but should be
+restricted to known frontend origins in production.
+
+10.4 Current development exposure
+
+The frontend uses an ngrok URL to reach the locally running backend:
+
+Expo application
+    |
+    v
+ngrok tunnel
+    |
+    v
+Local FastAPI/Uvicorn process
+
+This is a development deployment model rather than a production
+architecture.
+
+
+11. DEPLOYMENT ARCHITECTURE
+---------------------------
+
+11.1 Current development deployment
+
+Developer machine
+|
++-- FastAPI backend
+|   +-- Uvicorn
+|   +-- MongoDB connection
+|   +-- Local ML models
+|   +-- Cloudinary connection
+|   +-- Gemini connection
+|
++-- ngrok
+|   +-- Public HTTPS tunnel to backend
+|
++-- Expo development server
+    +-- Mobile device or web browser
+
+11.2 Frontend build targets
+
+The Expo configuration supports:
+
+- Android
+- iOS
+- Web
+
+EAS build profiles include:
+
+- development
+- preview
+- production
+
+The web target uses static output configuration.
+
+11.3 Recommended production deployment
+
+Mobile/Web client
+        |
+        v
+HTTPS load balancer or API gateway
+        |
+        v
+FastAPI application servers
+        |
+        +--> MongoDB
+        +--> Cloudinary
+        +--> Gemini
+        +--> News/market APIs
+        +--> Model-serving worker or inference service
+
+The ML inference workload could eventually be isolated into a dedicated
+service if image and audio processing becomes resource-intensive.
+
+
+12. ARCHITECTURAL STYLE
+-----------------------
+
+The system follows a modular monolithic architecture.
+
+It is not currently a full microservices system because:
+
+- All backend routers run in one FastAPI process.
+- Services are organized as Python modules inside one backend.
+- Database access is shared.
+- ML inference runs in the same backend application environment.
+- External integrations are called directly by the backend.
+
+Internal layered organization:
+
+Presentation layer:
+   Frontend screens and components
+
+API layer:
+   FastAPI routers
+
+Validation layer:
+   Pydantic schemas
+
+Business-logic layer:
+   Backend services
+
+Data-access layer:
+   Motor/MongoDB operations
+
+Infrastructure/integration layer:
+   Cloudinary, Firebase, Gemini, news APIs
+
+ML layer:
+   YOLO, TensorFlow, and acoustic models
+
+
+13. MAIN ARCHITECTURAL STRENGTHS
+--------------------------------
+
+- Clear separation between frontend and backend
+- Modular FastAPI router structure
+- Dedicated service layer for business logic
+- Separate Pydantic schemas for validation
+- Local model artifacts for specialized coconut analysis
+- Supports both visual and acoustic analysis
+- MongoDB provides flexible storage for user-generated content
+- Cloudinary avoids storing large media files directly in MongoDB
+- Firebase supports Google authentication and client-side persistence
+- Expo allows one frontend codebase for mobile and web
+- Market analysis, community, AI, and ML functionality are separated into
+  distinct modules
+
+
+14. IMPORTANT CURRENT LIMITATIONS
+----------------------------------
+
+1. The frontend navigation layout references several feature routes whose
+   source files were not visible in the current frontend tree.
+
+2. The backend currently uses permissive CORS configuration.
+
+3. The backend is exposed through a development ngrok URL.
+
+4. ML model loading is tightly coupled to the backend runtime.
+
+5. Credentials and service-account files exist in the backend workspace and
+   must be protected from commits and public distribution.
+
+6. The frontend and backend configuration contain environment-specific URLs,
+   so deployment requires updating configuration for each environment.
+
+7. The system is a modular monolith; independent scaling of API, ML
+   inference, and background processing is not yet implemented.
+
+
+15. CONCISE COMPONENT SUMMARY
+-----------------------------
+
+Frontend:
+   Expo + React Native + TypeScript
+   Expo Router
+   Firebase Auth
+   SecureStore/AsyncStorage
+   Fetch/Axios
+   Mobile and web UI
+
+Backend:
+   FastAPI + Uvicorn
+   Pydantic schemas
+   Motor/PyMongo
+   Modular routers and services
+   CORS middleware
+   Cloudinary integration
+
+Database:
+   MongoDB
+   Stores users, posts, scans, notifications, products, prices, and
+   related metadata
+
+Computer Vision:
+   YOLO detector
+   TensorFlow maturity classifiers
+   Four-class non-coconut rejection model
+
+Audio Intelligence:
+   Librosa/SciPy/SoundFile/Pydub preprocessing
+   Scikit-learn/pickle acoustic models
+
+AI:
+   Google Gemini chatbot and AI-assisted features
+
+Media:
+   Cloudinary image storage
+
+External Information:
+   Coconut news API
+   Market-price and copra data sources
+
+Deployment:
+   Expo/EAS frontend
+   Local Uvicorn backend
+   ngrok development tunnel
+
